@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AirDosa - AI-Powered Instant Dosa Drone Delivery</title>
+  <meta name="description" content="Get hot, golden-crisp South Indian dosas delivered straight to your balcony via AI-guided autonomous drones in under 5 minutes. No soggy food, just pure crispy magic.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* -----------------------------------------
+       DESIGN SYSTEM & RESET
+       ----------------------------------------- */
+    :root {
+      --bg-dark: #07090e;
+      --bg-card: rgba(15, 23, 42, 0.45);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(234, 88, 12, 0.15);
+      
+      --accent-saffron: #f97316;
+      --accent-saffron-dark: #ea580c;
+      --accent-teal: #06b6d4;
+      --accent-teal-dark: #0891b2;
+      --accent-gold: #eab308;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dark: #0f172a;
+      
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      
+      --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --glow-saffron: 0 0 25px rgba(249, 115, 22, 0.3);
+      --glow-teal: 0 0 25px rgba(6, 182, 212, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Ambient Background Grids & Blobs */
+    .bg-blobs {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .blob-1 {
+      position: absolute;
+      top: -10%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(234, 88, 12, 0.12) 0%, rgba(0,0,0,0) 70%);
+      filter: blur(80px);
+      animation: drift 25s ease-in-out infinite alternate;
+    }
+
+    .blob-2 {
+      position: absolute;
+      bottom: -15%;
+      left: -10%;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(0,0,0,0) 70%);
+      filter: blur(100px);
+      animation: drift 30s ease-in-out infinite alternate-reverse;
+    }
+
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+      background-size: 50px 50px;
+      background-position: center top;
+      pointer-events: none;
+    }
+
+    /* -----------------------------------------
+       TYPOGRAPHY & UTILITIES
+       ----------------------------------------- */
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .gradient-text-saffron {
+      background: linear-gradient(135deg, #ff9950 0%, #ff5c00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-teal {
+      background: linear-gradient(135deg, #38bdf8 0%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-dual {
+      background: linear-gradient(135deg, #f97316 0%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 9999px;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-saffron) 0%, var(--accent-saffron-dark) 100%);
+      color: white;
+      box-shadow: var(--glow-saffron);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(249, 115, 22, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--glass-shadow);
+      transition: var(--transition-smooth);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(249, 115, 22, 0.25);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(234, 88, 12, 0.05);
+    }
+
+    /* -----------------------------------------
+       HEADER
+       ----------------------------------------- */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      transition: var(--transition-smooth);
+      border-bottom: 1px solid transparent;
+    }
+
+    header.scrolled {
+      background: rgba(7, 9, 14, 0.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 0;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition-smooth);
+    }
+
+    header.scrolled .nav-container {
+      padding: 10px 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--text-main);
+    }
+
+    .logo-icon-container {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-saffron) 0%, var(--accent-saffron-dark) 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+    }
+
+    .logo-text {
+      letter-spacing: -0.03em;
+    }
+
+    .logo-text span {
+      color: var(--accent-teal);
+    }
+
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: var(--transition-smooth);
+      position: relative;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background-color: var(--accent-saffron);
+      transition: var(--transition-smooth);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    /* -----------------------------------------
+       HERO SECTION
+       ----------------------------------------- */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 24px 80px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      z-index: 10;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 60px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(249, 115, 22, 0.08);
+      border: 1px solid rgba(249, 115, 22, 0.2);
+      padding: 8px 16px;
+      border-radius: 9999px;
+      color: var(--accent-saffron);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      backdrop-filter: blur(5px);
+    }
+
+    .hero-badge i {
+      animation: spin 8s linear infinite;
+    }
+
+    .hero-title {
+      font-size: 4rem;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-description {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      max-width: 580px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 32px;
+    }
+
+    .stat-number {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-number span {
+      color: var(--accent-teal);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Hero Right Visuals */
+    .hero-visual {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .drone-image-card {
+      position: relative;
+      width: 100%;
+      border-radius: 32px;
+      padding: 12px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .drone-image-wrapper {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      aspect-ratio: 1;
+      width: 100%;
+      background: #0f131a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drone-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition-smooth);
+    }
+
+    .drone-image-card:hover img {
+      transform: scale(1.05);
+    }
+
+    /* UI Overlay Badges in Hero */
+    .hud-badge {
+      position: absolute;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(12px);
+      padding: 10px 16px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      transition: var(--transition-smooth);
+      z-index: 5;
+    }
+
+    .hud-badge:hover {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: var(--accent-teal);
+      transform: scale(1.03);
+    }
+
+    .hud-1 {
+      top: 10%;
+      left: -40px;
+      animation: float-offset 7s ease-in-out infinite alternate;
+    }
+
+    .hud-2 {
+      bottom: 15%;
+      right: -30px;
+      animation: float-offset 8s ease-in-out infinite alternate-reverse;
+    }
+
+    .hud-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hud-icon.saffron {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--accent-saffron);
+    }
+
+    .hud-data h5 {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .hud-data p {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* -----------------------------------------
+       FEATURES SECTION
+       ----------------------------------------- */
+    .features-section {
+      padding: 120px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 64px auto;
+    }
+
+    .section-badge {
+      display: inline-block;
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      color: var(--accent-teal);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-size: 2.8rem;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .section-description {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .feature-card {
+      padding: 40px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-icon-wrapper {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 28px;
+      color: var(--accent-saffron);
+      transition: var(--transition-smooth);
+    }
+
+    .feature-card:hover .feature-icon-wrapper {
+      transform: scale(1.1) rotate(5deg);
+      color: var(--accent-teal);
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(249, 115, 22, 0.15) 100%);
+    }
+
+    .feature-title {
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+    }
+
+    .feature-text {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(100px circle at var(--x, 0) var(--y, 0), rgba(249, 115, 22, 0.08), transparent 70%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    /* -----------------------------------------
+       PRICING SECTION
+       ----------------------------------------- */
+    .pricing-section {
+      padding: 80px 24px 120px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pricing-card.premium {
+      border-color: rgba(249, 115, 22, 0.35);
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.5) 0%, rgba(15, 23, 42, 0.3) 100%);
+    }
+
+    .pricing-card.premium::after {
+      content: '';
+      position: absolute;
+      top: -150px;
+      right: -150px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .popular-tag {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: linear-gradient(135deg, var(--accent-saffron) 0%, var(--accent-saffron-dark) 100%);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+    }
+
+    .plan-name {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+
+    .plan-description {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+      min-height: 48px;
+    }
+
+    .plan-price {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 32px;
+    }
+
+    .price-currency {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .price-amount {
+      font-family: var(--font-heading);
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1;
+    }
+
+    .price-period {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 40px;
+      flex-grow: 1;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .plan-features li i {
+      flex-shrink: 0;
+      color: var(--accent-teal);
+    }
+
+    .pricing-card.premium .plan-features li i {
+      color: var(--accent-saffron);
+    }
+
+    .plan-button {
+      width: 100%;
+    }
+
+    /* -----------------------------------------
+       FOOTER
+       ----------------------------------------- */
+    footer {
+      border-top: 1px solid var(--border-color);
+      background-color: #04060a;
+      padding: 80px 24px 40px 24px;
+      position: relative;
+    }
+
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto 60px auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1.5fr;
+      gap: 64px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-brand p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 320px;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .social-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: var(--transition-smooth);
+    }
+
+    .social-btn:hover {
+      background: rgba(249, 115, 22, 0.1);
+      color: var(--accent-saffron);
+      border-color: var(--accent-saffron);
+      transform: translateY(-2px);
+    }
+
+    .footer-links-col h4 {
+      font-size: 1.1rem;
+      margin-bottom: 24px;
+      color: var(--text-main);
+    }
+
+    .footer-links-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links-col a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: var(--transition-smooth);
+    }
+
+    .footer-links-col a:hover {
+      color: var(--text-main);
+      padding-left: 4px;
+    }
+
+    .footer-newsletter h4 {
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    .footer-newsletter p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    .newsletter-form {
+      display: flex;
+      gap: 8px;
+    }
+
+    .newsletter-input {
+      flex-grow: 1;
+      padding: 12px 20px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      color: white;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .newsletter-input:focus {
+      border-color: var(--accent-teal);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
+    }
+
+    .newsletter-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-teal-dark) 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      box-shadow: var(--glow-teal);
+    }
+
+    .newsletter-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 40px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-bottom-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition-smooth);
+    }
+
+    .footer-bottom-links a:hover {
+      color: var(--text-main);
+    }
+
+    /* -----------------------------------------
+       FLOATING ACTION BUTTON
+       ----------------------------------------- */
+    .floating-order-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 90;
+      background: linear-gradient(135deg, var(--accent-saffron) 0%, var(--accent-saffron-dark) 100%);
+      color: white;
+      border: none;
+      padding: 16px 24px;
+      border-radius: 9999px;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(249, 115, 22, 0.4), var(--glow-saffron);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: var(--transition-smooth);
+      animation: bounce-float 3s ease-in-out infinite;
+    }
+
+    .floating-order-btn:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 35px rgba(249, 115, 22, 0.6), 0 0 30px rgba(249, 115, 22, 0.4);
+      animation-play-state: paused;
+    }
+
+    /* -----------------------------------------
+       INTERACTIVE ORDER MODAL SIMULATOR
+       ----------------------------------------- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(7, 9, 14, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 600px;
+      background: #0f1524;
+      border: 1px solid var(--border-color);
+      border-radius: 28px;
+      padding: 40px;
+      position: relative;
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .close-modal:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      transform: rotate(90deg);
+    }
+
+    .modal-header {
+      margin-bottom: 28px;
+    }
+
+    .modal-title {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-title i {
+      color: var(--accent-saffron);
+    }
+
+    .modal-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Simulation Layout */
+    .simulator-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Dosa Customizer */
+    .customizer-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .customizer-title {
+      font-size: 1rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .opt-btn {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      border-radius: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: var(--transition-smooth);
+      text-align: center;
+    }
+
+    .opt-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+    }
+
+    .opt-btn.active {
+      background: rgba(249, 115, 22, 0.1);
+      border-color: var(--accent-saffron);
+      color: var(--accent-saffron);
+      font-weight: 600;
+    }
+
+    /* Tracking Path SVG */
+    .tracking-map {
+      height: 140px;
+      background: rgba(7, 9, 14, 0.6);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+      display: none; /* Shown during tracking */
+    }
+
+    .tracking-path-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .kitchen-node {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      transform: translateY(-50%);
+      text-align: center;
+      z-index: 2;
+    }
+
+    .home-node {
+      position: absolute;
+      top: 50%;
+      right: 10%;
+      transform: translateY(-50%);
+      text-align: center;
+      z-index: 2;
+    }
+
+    .node-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #0f1524;
+      border: 3px solid var(--accent-teal);
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+    }
+
+    .node-dot.saffron {
+      border-color: var(--accent-saffron);
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+    }
+
+    .node-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: block;
+      font-weight: 600;
+    }
+
+    .simulated-drone {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      background: var(--accent-saffron);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: var(--glow-saffron);
+      top: calc(50% - 18px);
+      left: 10%;
+      transform: scale(0);
+      z-index: 3;
+      transition: left 8s linear, transform 0.3s ease;
+    }
+
+    .simulated-drone.active {
+      transform: scale(1);
+    }
+
+    /* Live Telemetry Data */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      display: none; /* Shown during tracking */
+    }
+
+    .telemetry-item {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .telemetry-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .telemetry-val {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 1.1rem;
+    }
+
+    .tracking-status-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: none; /* Shown during tracking */
+    }
+
+    .status-pulse-dot {
+      width: 12px;
+      height: 12px;
+      background: var(--accent-saffron);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-saffron);
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    .status-text {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+    }
+
+    /* -----------------------------------------
+       SCROLL-TRIGGER ANIMATION SYSTEM
+       ----------------------------------------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+
+    /* -----------------------------------------
+       KEYFRAME ANIMATIONS
+       ----------------------------------------- */
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-30px, 40px) scale(1.1); }
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    @keyframes float-offset {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    @keyframes bounce-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    @keyframes pulse-dot {
+      0% { transform: scale(0.9); opacity: 0.6; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.6; }
+    }
+
+    /* -----------------------------------------
+       RESPONSIVE BREAKPOINTS
+       ----------------------------------------- */
+    @media (max-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 60px;
+        text-align: center;
+      }
+
+      .hero-description {
+        margin: 0 auto 40px auto;
+      }
+
+      .hero-buttons {
+        justify-content: center;
+      }
+
+      .hero-stats {
+        justify-content: center;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-menu {
+        display: none; /* Mobile menu can be toggled */
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .hero-title {
+        font-size: 3rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Backdrop -->
+  <div class="bg-blobs">
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header id="header">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <div class="logo-icon-container">
+          <i data-lucide="navigation-2" style="transform: rotate(45deg); stroke-width: 3; width: 20px; height: 20px;"></i>
+        </div>
+        <div class="logo-text">Air<span>Dosa</span></div>
+      </a>
+      <ul class="nav-menu">
+        <li><a href="#" class="nav-link">Home</a></li>
+        <li><a href="#features" class="nav-link">Tech Features</a></li>
+        <li><a href="#pricing" class="nav-link">Subscription Pricing</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn btn-secondary btn-order-trigger" style="padding: 10px 20px; font-size: 0.9rem;">
+          <i data-lucide="zap" style="width: 16px; height: 16px;"></i> Order Simulator
+        </button>
+        <button class="menu-toggle">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div class="hero-content reveal">
+        <div class="hero-badge">
+          <i data-lucide="loader" style="width: 14px; height: 14px;"></i> AI-Powered Drone Logistics
+        </div>
+        <h1 class="hero-title">
+          Crispy Dosas.<br>
+          <span class="gradient-text-saffron">Delivered by Drones</span><br>
+          in 5 Minutes.
+        </h1>
+        <p class="hero-description">
+          Soggy deliveries are history. AirDosa combines automated cloud kitchens with autonomous flight mapping, dropping fresh, golden, piping-hot dosas directly onto your balcony.
+        </p>
+        <div class="hero-buttons">
+          <button class="btn btn-primary btn-order-trigger">
+            <i data-lucide="shopping-bag"></i> Launch Order Simulator
+          </button>
+          <a href="#features" class="btn btn-secondary">
+            Explore Tech Specs <i data-lucide="chevron-right"></i>
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number">300s<span>⏱️</span></div>
+            <div class="stat-label">Batter to Balcony Time</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">100%<span>🔥</span></div>
+            <div class="stat-label">Crispiness Retention</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">4.9<span>⭐</span></div>
+            <div class="stat-label">98k Happy Indian Foodies</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Visual Showcase -->
+      <div class="hero-visual reveal reveal-delay-2">
+        <div class="drone-image-card">
+          <div class="drone-image-wrapper">
+            <!-- Referencing our generated startup visual asset -->
+            <img src="airdosa_drone_delivery.png" alt="Futuristic AirDosa Delivery Drone over Bengaluru skyline">
+          </div>
+          
+          <!-- UI Telemetry Badges -->
+          <div class="hud-badge hud-1">
+            <div class="hud-icon saffron">
+              <i data-lucide="thermometer"></i>
+            </div>
+            <div class="hud-data">
+              <h5>Pod Internal</h5>
+              <p>85.4°C (Optimal)</p>
+            </div>
+          </div>
+
+          <div class="hud-badge hud-2">
+            <div class="hud-icon">
+              <i data-lucide="gauge"></i>
+            </div>
+            <div class="hud-data">
+              <h5>Telemetry</h5>
+              <p>Altitude: 15m | 52 km/h</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section" id="features">
+    <div class="section-header reveal">
+      <div class="section-badge">How It Works</div>
+      <h2 class="section-title">Freshness in Flight</h2>
+      <p class="section-description">
+        We solved the age-old problem of soggy delivery dosas. Here is the cutting-edge tech that makes it possible.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Feature Card 1 -->
+      <div class="glass-card feature-card reveal reveal-delay-1">
+        <div class="feature-icon-wrapper">
+          <i data-lucide="navigation" style="width: 28px; height: 28px;"></i>
+        </div>
+        <h3 class="feature-title">LiDAR Autopilot</h3>
+        <p class="feature-text">
+          Our drones navigate complex urban skies, dodging high-tension power lines, buildings, and local crows with military-grade collision avoidance sensors.
+        </p>
+      </div>
+
+      <!-- Feature Card 2 -->
+      <div class="glass-card feature-card reveal reveal-delay-2">
+        <div class="feature-icon-wrapper">
+          <i data-lucide="shield-check" style="width: 28px; height: 28px;"></i>
+        </div>
+        <h3 class="feature-title">Thermo-Crisp Pod</h3>
+        <p class="feature-text">
+          Carbon-fiber containers featuring dynamic ventilation valves. It releases steam while locking in tawa heat, keeping the dosa perfectly crispy.
+        </p>
+      </div>
+
+      <!-- Feature Card 3 -->
+      <div class="glass-card feature-card reveal reveal-delay-3">
+        <div class="feature-icon-wrapper">
+          <i data-lucide="zap" style="width: 28px; height: 28px;"></i>
+        </div>
+        <h3 class="feature-title">5-Min Balcony Drop</h3>
+        <p class="feature-text">
+          No stairs, no elevators, no gates. Drones drop directly to your balcony or window sill using real-time spatial tags. Instant gratification, served hot.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section class="pricing-section" id="pricing">
+    <div class="section-header reveal">
+      <div class="section-badge">Simple Pricing</div>
+      <h2 class="section-title">Pick Your Fuel Plan</h2>
+      <p class="section-description">
+        Whether you want a casual weekend drop or unlimited daily breakfasts, we have a plan suited for your appetite.
+      </p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Plan 1: Dosa Lite -->
+      <div class="glass-card pricing-card reveal reveal-delay-1">
+        <h3 class="plan-name">Dosa Lite</h3>
+        <p class="plan-description">Great for casual cravings and weekend experimental dosa drops.</p>
+        <div class="plan-price">
+          <span class="price-currency">₹</span>
+          <span class="price-amount">99</span>
+          <span class="price-period">/ delivery</span>
+        </div>
+        <ul class="plan-features">
+          <li><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i> Standard 10-Min Delivery</li>
+          <li><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i> Access to Classic Menu</li>
+          <li><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i> Balcony Dropping System</li>
+          <li><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i> Standard Customer Care</li>
+        </ul>
+        <button class="btn btn-secondary plan-button btn-order-trigger" data-plan="Lite">
+          Order Lite Now
+        </button>
+      </div>
+
+      <!-- Plan 2: Dosa Pro -->
+      <div class="glass-card pricing-card premium reveal reveal-delay-2">
+        <div class="popular-tag">Most Popular</div>
+        <h3 class="plan-name gradient-text-saffron">Dosa Pro</h3>
+        <p class="plan-description">For the ultimate South Indian foodie. Free deliveries, speed drone paths, and premium batters.</p>
+        <div class="plan-price">
+          <span class="price-currency">₹</span>
+          <span class="price-amount">499</span>
+          <span class="price-period">/ month</span>
+        </div>
+        <ul class="plan-features">
+          <li><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i> <strong>Unlimited Free Deliveries</strong></li>
+          <li><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i> Priority 5-Min Hyper-Delivery</li>
+          <li><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i> Premium Menu (Schezwan, Cheese Rava)</li>
+          <li><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i> Custom Batter & Butter Ratio Selection</li>
+          <li><i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i> 24/7 VIP Priority Fleet Support</li>
+        </ul>
+        <button class="btn btn-primary plan-button btn-order-trigger" data-plan="Pro">
+          Subscribe to Pro
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <div class="logo-icon-container">
+            <i data-lucide="navigation-2" style="transform: rotate(45deg); stroke-width: 3; width: 20px; height: 20px;"></i>
+          </div>
+          <div class="logo-text">Air<span>Dosa</span></div>
+        </a>
+        <p>Serving future-ready, piping hot breakfast. Re-imagining Indian food logistics through autonomous aerial robotics.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-btn"><i data-lucide="twitter" style="width: 18px; height: 18px;"></i></a>
+          <a href="#" class="social-btn"><i data-lucide="instagram" style="width: 18px; height: 18px;"></i></a>
+          <a href="#" class="social-btn"><i data-lucide="github" style="width: 18px; height: 18px;"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-links-col">
+        <h4>Explore Tech</h4>
+        <ul>
+          <li><a href="#features">Drone Specifications</a></li>
+          <li><a href="#pricing">Subscription Model</a></li>
+          <li><a href="#">Launch Cities (Indiranagar)</a></li>
+          <li><a href="#">Aero-Cooking Safety</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-newsletter">
+        <h4>Stay Updated</h4>
+        <p>Get notified when AirDosa launching hubs open in HSR Layout or Koramangala.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed! We will notify you when we fly to your neighborhood.');">
+          <input type="email" placeholder="Enter your email" required class="newsletter-input">
+          <button type="submit" class="newsletter-btn">
+            <i data-lucide="arrow-right" style="width: 20px; height: 20px;"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 AirDosa Aviation Pvt Ltd. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Aviation Compliance</a>
+        <a href="#">FSSAI License</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Bouncing CTA Button -->
+  <button class="floating-order-btn btn-order-trigger">
+    <i data-lucide="zap"></i> Order Now
+  </button>
+
+  <!-- Interactive Order Simulator Modal -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal-card">
+      <button class="close-modal" id="closeModal">
+        <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+      </button>
+      
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">
+          <i data-lucide="play-circle"></i> AirDosa Flight Simulator
+        </h3>
+        <p class="modal-subtitle" id="modalSubtitle">Custom-configure and deploy your autonomous drone order.</p>
+      </div>
+
+      <div class="simulator-content">
+        <!-- Step 1: Dosa Customizer -->
+        <div class="customizer-box" id="stepConfigure">
+          <h4 class="customizer-title">Select Dosa Base</h4>
+          <div class="options-grid">
+            <button class="opt-btn active" data-opt="dosa">Mysore Masala</button>
+            <button class="opt-btn" data-opt="dosa">Ghee Roast Plain</button>
+            <button class="opt-btn" data-opt="dosa">Cheese Chilli Rava</button>
+          </div>
+
+          <h4 class="customizer-title">Select Spice/Butter Level</h4>
+          <div class="options-grid">
+            <button class="opt-btn" data-opt="spice">Classic Lite</button>
+            <button class="opt-btn active" data-opt="spice">Medium Saffron</button>
+            <button class="opt-btn" data-opt="spice">Guntur Fire</button>
+          </div>
+
+          <button class="btn btn-primary modal-btn" id="btnLaunchOrder">
+            <i data-lucide="navigation"></i> Deploy Delivery Drone
+          </button>
+        </div>
+
+        <!-- Step 2: Tracking Map (Hidden originally) -->
+        <div class="tracking-map" id="stepMap">
+          <svg class="tracking-path-svg">
+            <path d="M 60 70 Q 250 10, 440 70" fill="none" stroke="rgba(255, 255, 255, 0.15)" stroke-width="4" stroke-dasharray="8 6"/>
+            <path id="flyingProgress" d="M 60 70 Q 250 10, 440 70" fill="none" stroke="var(--accent-teal)" stroke-width="4" stroke-dasharray="1000" stroke-dashoffset="1000" transition="stroke-dashoffset 8s linear"/>
+          </svg>
+          
+          <div class="kitchen-node">
+            <span class="node-dot saffron"></span>
+            <span class="node-label">Indiranagar Hub</span>
+          </div>
+
+          <div class="home-node">
+            <span class="node-dot"></span>
+            <span class="node-label">Your Balcony</span>
+          </div>
+
+          <div class="simulated-drone" id="droneIcon">
+            <i data-lucide="navigation-2" style="transform: rotate(45deg); width: 18px; height: 18px; stroke-width: 3;"></i>
+          </div>
+        </div>
+
+        <!-- Live Telemetry (Hidden originally) -->
+        <div class="telemetry-grid" id="stepTelemetry">
+          <div class="telemetry-item">
+            <div class="telemetry-lbl">Speed</div>
+            <div class="telemetry-val" id="valSpeed">0 km/h</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-lbl">Altitude</div>
+            <div class="telemetry-val" id="valAlt">0m</div>
+          </div>
+          <div class="telemetry-item">
+            <div class="telemetry-lbl">Dosa Temp</div>
+            <div class="telemetry-val" id="valTemp">85°C</div>
+          </div>
+        </div>
+
+        <!-- Status details -->
+        <div class="tracking-status-box" id="stepStatus">
+          <div class="status-pulse-dot"></div>
+          <div class="status-text" id="statusText">Initializing drone components...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // -----------------------------------------
+    // Header Scroll Styling Change
+    // -----------------------------------------
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // -----------------------------------------
+    // Scroll Animation - Intersection Observer
+    // -----------------------------------------
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, {
+      threshold: 0.15,
+      rootMargin: "0px 0px -50px 0px"
+    });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // Card hover dynamic spotlight effect
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--x', `${x}px`);
+        card.style.setProperty('--y', `${y}px`);
+      });
+    });
+
+    // Option Buttons Toggle (Simulator customizer)
+    document.querySelectorAll('.opt-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.getAttribute('data-opt');
+        document.querySelectorAll(`.opt-btn[data-opt="${group}"]`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // -----------------------------------------
+    // Interactive Simulator Logic
+    // -----------------------------------------
+    const modal = document.getElementById('orderModal');
+    const closeBtn = document.getElementById('closeModal');
+    const configureStep = document.getElementById('stepConfigure');
+    const mapStep = document.getElementById('stepMap');
+    const telemetryStep = document.getElementById('stepTelemetry');
+    const statusStep = document.getElementById('stepStatus');
+    const statusText = document.getElementById('statusText');
+    const btnLaunch = document.getElementById('btnLaunchOrder');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalSubtitle = document.getElementById('modalSubtitle');
+    const droneIcon = document.getElementById('droneIcon');
+    const flyingProgress = document.getElementById('flyingProgress');
+    
+    // Telemetry DOM nodes
+    const valSpeed = document.getElementById('valSpeed');
+    const valAlt = document.getElementById('valAlt');
+    const valTemp = document.getElementById('valTemp');
+
+    // Open Modal
+    document.querySelectorAll('.btn-order-trigger').forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.classList.add('active');
+        resetSimulator();
+      });
+    });
+
+    // Close Modal
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+
+    function resetSimulator() {
+      configureStep.style.display = 'block';
+      mapStep.style.display = 'none';
+      telemetryStep.style.display = 'none';
+      statusStep.style.display = 'none';
+      modalTitle.innerHTML = '<i data-lucide="play-circle"></i> AirDosa Flight Simulator';
+      modalSubtitle.textContent = 'Custom-configure and deploy your autonomous drone order.';
+      lucide.createIcons();
+      
+      droneIcon.classList.remove('active');
+      droneIcon.style.left = '10%';
+      droneIcon.style.top = 'calc(50% - 18px)';
+      
+      // Reset SVG path dashoffset
+      flyingProgress.style.strokeDashoffset = '1000';
+    }
+
+    // Simulator Sequence
+    btnLaunch.addEventListener('click', () => {
+      configureStep.style.display = 'none';
+      mapStep.style.display = 'block';
+      telemetryStep.style.display = 'grid';
+      statusStep.style.display = 'flex';
+      
+      modalTitle.innerHTML = '<i data-lucide="navigation"></i> Drone Telemetry Stream';
+      modalSubtitle.textContent = 'Live tracking flight AD-402 from Central Indiranagar Hub.';
+      lucide.createIcons();
+
+      // Start flight animation
+      setTimeout(() => {
+        droneIcon.classList.add('active');
+        // SVG path animation trick
+        flyingProgress.style.strokeDashoffset = '0';
+        simulateFlight();
+      }, 300);
+    });
+
+    function simulateFlight() {
+      const statuses = [
+        { progress: 0, text: 'Piping hot dosa prepared and sealed in Aero-Pod.', speed: 0, alt: 0, temp: 85 },
+        { progress: 15, text: 'Drone rotor pre-checks passed. Clearance granted.', speed: 10, alt: 5, temp: 85 },
+        { progress: 30, text: 'Launching flight path. Speeding up over 80ft road...', speed: 45, alt: 18, temp: 84 },
+        { progress: 50, text: 'AI autopilot detecting environment. Sidestepping residential power lines.', speed: 58, alt: 22, temp: 83 },
+        { progress: 70, text: 'Dodging curious flock of pigeons. Cruising towards destination...', speed: 64, alt: 24, temp: 82 },
+        { progress: 85, text: 'Approaching geo-fenced balcony boundaries. Initiating hover.', speed: 20, alt: 12, temp: 81 },
+        { progress: 95, text: 'Balcony drop check: secure. Releasing Thermo-Pod.', speed: 2, alt: 3, temp: 80 },
+        { progress: 100, text: 'Dosa safely landed! Breakfast is served. 🍽️🔥', speed: 0, alt: 0, temp: 80 }
+      ];
+
+      let currentStep = 0;
+
+      // Make drone move on the screen using simple absolute placement percentage matching status progress
+      const interval = setInterval(() => {
+        if (currentStep >= statuses.length) {
+          clearInterval(interval);
+          return;
+        }
+
+        const data = statuses[currentStep];
+        statusText.textContent = data.text;
+        valSpeed.textContent = `${data.speed} km/h`;
+        valAlt.textContent = `${data.alt}m`;
+        valTemp.textContent = `${data.temp}°C`;
+
+        // Slide the drone element across
+        const leftPercent = 10 + (data.progress * 0.76); // 10% to 86% range
+        droneIcon.style.left = `${leftPercent}%`;
+        
+        // Arc movement: height of path reaches peak at 50% progress
+        const verticalArc = Math.sin((data.progress / 100) * Math.PI) * 45; 
+        droneIcon.style.top = `calc(50% - 18px - ${verticalArc}px)`;
+
+        if (data.progress === 100) {
+          // Pulse completed glow or button text
+          btnLaunch.innerHTML = '<i data-lucide="check"></i> Enjoy Your Dosa!';
+          document.querySelector('.status-pulse-dot').style.background = 'var(--accent-teal)';
+          document.querySelector('.status-pulse-dot').style.boxShadow = '0 0 10px var(--accent-teal)';
+        }
+
+        currentStep++;
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
