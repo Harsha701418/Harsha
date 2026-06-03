@@ -381,7 +381,7 @@ export default function Home() {
       <header id="header" className={isScrolled ? 'scrolled' : ''}>
         <div className="nav-container">
           <a href="#" className="logo">
-            <div class="logo-icon-container">
+            <div className="logo-icon-container">
               <Navigation2 style={{ transform: 'rotate(45deg)', strokeWidth: 3, width: 20, height: 20 }} />
             </div>
             <div className="logo-text">Air<span>Dosa</span></div>
@@ -579,7 +579,7 @@ export default function Home() {
         <div className="footer-grid">
           <div className="footer-brand">
             <a href="#" className="logo">
-              <div class="logo-icon-container">
+              <div className="logo-icon-container">
                 <Navigation2 style={{ transform: 'rotate(45deg)', strokeWidth: 3, width: 20, height: 20 }} />
               </div>
               <div className="logo-text">Air<span>Dosa</span></div>
